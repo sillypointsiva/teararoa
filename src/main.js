@@ -6,6 +6,10 @@ app.innerHTML = `
   <div style="font-family: sans-serif; padding: 1.5rem; max-width: 500px; margin: 0 auto;">
     <h1 style="text-align:center;">Native Alien Trail</h1>
     <p id="status" style="text-align:center; color:#666;">Loading trail data...</p>
+    <div style="text-align:center; margin-bottom:10px;">
+      <input id="debugKm" type="number" placeholder="test km" style="width:80px;">
+      <button id="debugBtn">Test</button>
+    </div>
     <div id="days"></div>
   </div>
 `
@@ -34,6 +38,11 @@ function renderDays(currentKm) {
     `
   }).join('')
 }
+
+document.getElementById('debugBtn').addEventListener('click', () => {
+  const val = Number(document.getElementById('debugKm').value)
+  renderDays(val)
+})
 
 async function init() {
   let trail
