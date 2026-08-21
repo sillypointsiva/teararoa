@@ -1,5 +1,6 @@
 import { loadTrail, matchPosition } from './trail.js'
 import { days } from './days.js'
+import { Geolocation } from '@capacitor/geolocation'
 
 const app = document.getElementById('app')
 app.innerHTML = `
@@ -44,6 +45,17 @@ document.getElementById('debugBtn').addEventListener('click', () => {
   renderDays(val)
 })
 
+async function getLocation() {
+  const permStatus = await Geolocation.checkPermissions()
+  if (permStatus.location !== 'granted' && permStatus.location !== 'limited') {
+    const requested = await Geolocation.requestPermissions()
+    if (requested.location !== 'granted' && requested.location !== 'limited') {
+      throw new Error('Location permission denied')
+    }
+  }
+  return Geolocation.getCurrentPosition()
+}
+
 async function init() {
   let trail
   try {
@@ -55,24 +67,16 @@ async function init() {
     return
   }
 
-  if (!navigator.geolocation) {
-    statusEl.textContent = 'This browser does not support location.'
+  try {
+    const position = await getLocation()
+    const { latitude, longitude } = position.coords
+    const result = matchPosition(trail, latitude, longitude)
+    statusEl.textContent = `${result.km.toFixed(1)} km along Northland`
+    renderDays(result.km)
+  } catch (err) {
+    statusEl.textContent = `Could not get your location: ${err.message}`
     renderDays(0)
-    return
   }
-
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const { latitude, longitude } = position.coords
-      const result = matchPosition(trail, latitude, longitude)
-      statusEl.textContent = `${result.km.toFixed(1)} km along Northland`
-      renderDays(result.km)
-    },
-    (err) => {
-      statusEl.textContent = `Could not get your location: ${err.message}`
-      renderDays(0)
-    }
-  )
 }
 
 init()
