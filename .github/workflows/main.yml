@@ -1,4 +1,4 @@
-name: Build Android APK
+   name: Build Android APK
 
 on:
   push:
@@ -38,6 +38,10 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      - name: Add location permissions to manifest
+        run: |
+          sed -i '/<manifest /a\    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />' android/app/src/main/AndroidManifest.xml
+
       - name: Build debug APK
         run: cd android && ./gradlew assembleDebug
 
@@ -45,4 +49,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk       
