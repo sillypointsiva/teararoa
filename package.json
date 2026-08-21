@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "@capacitor/core": "^6.1.0",
-    "@capacitor/android": "^6.1.0"
+    "@capacitor/android": "^6.1.0",
+    "@capacitor/geolocation": "^6.0.0"
   },
   "devDependencies": {
     "vite": "^5.4.0",
